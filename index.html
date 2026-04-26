@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>劳务狗狗</title>
+<style>
+:root {
+  --primary: #D4551A;
+  --primary-light: #F07642;
+  --bg-light: #FAFAF8;
+  --bg-dark: #1A1814;
+  --ink: #1A1814;
+  --ink-light: #6B6560;
+  --surface: #F0EDE8;
+  --border: #E5E0DA;
+  --white: #FFFFFF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg-light);
+  color: var(--ink);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  position: relative;
+}
+
+section.dark {
+  background: var(--bg-dark);
+  color: var(--white);
+}
+section.dark .ink-light { color: #A09890; }
+
+.content {
+  max-width: 720px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.content.wide { max-width: 960px; }
+
+h1 {
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 28px;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+p {
+  font-size: 17px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+  color: inherit;
+}
+
+.ink-light { color: var(--ink-light); }
+.dark .ink-light { color: #A09890; }
+
+.tagline {
+  font-size: clamp(18px, 3vw, 22px);
+  line-height: 1.6;
+  color: var(--ink-light);
+  margin-bottom: 40px;
+}
+.dark .tagline { color: #A09890; }
+
+.tagline:last-child { margin-bottom: 0; }
+
+ul.steps {
+  list-style: none;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+ul.steps li {
+  font-size: 16px;
+  padding-left: 24px;
+  position: relative;
+}
+ul.steps li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+.dark ul.steps li::before { background: var(--primary-light); }
+
+.closing {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  font-size: 15px;
+  color: var(--ink-light);
+  font-style: italic;
+}
+.dark .closing {
+  border-top-color: #3A3530;
+  color: #A09890;
+}
+
+/* Mock UI */
+.mock-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 32px;
+}
+.dark .mock-panel {
+  background: #252118;
+  border-color: #3A3530;
+}
+.mock-panel h3 {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  margin-bottom: 16px;
+}
+.dark .mock-panel h3 { color: #A09890; }
+
+.mock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.mock-field {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mock-field span:first-child { color: var(--ink-light); font-size: 12px; }
+.mock-field span:last-child { font-weight: 600; }
+.dark .mock-field {
+  background: #1A1814;
+  border-color: #3A3530;
+}
+.dark .mock-field span:first-child { color: #A09890; }
+
+.mock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mock-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+.dark .mock-list-item {
+  background: #1A1814;
+  border-color: #3A3530;
+}
+.mock-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.dark .mock-avatar {
+  background: #252118;
+  border-color: #3A3530;
+}
+
+.mock-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.mock-table th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--ink-light);
+  font-weight: 600;
+  font-size: 12px;
+}
+.dark .mock-table th { border-bottom-color: #3A3530; color: #A09890; }
+.mock-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.dark .mock-table td { border-bottom-color: #3A3530; }
+
+.mock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dark .mock-btn { background: var(--primary-light); }
+
+/* Icon placeholder */
+.icon-dog {
+  width: 64px;
+  height: 64px;
+  background: var(--primary);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 32px;
+}
+
+/* Two column layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* Flow visualization */
+.flow-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 24px 0;
+}
+.flow-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.flow-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.dark .flow-item { border-bottom-color: #3A3530; }
+.flow-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.dark .flow-dot { background: var(--primary-light); }
+.flow-arrow {
+  text-align: center;
+  color: var(--ink-light);
+  font-size: 12px;
+  padding: 4px 0;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.3s;
+}
+.flow-arrow.visible { opacity: 1; }
+
+/* Contrast section */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+.compare-row .old {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  opacity: 0.6;
+}
+.compare-row .new {
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: 24px;
+}
+.compare-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  margin-bottom: 16px;
+}
+.compare-row .old .compare-label { color: var(--ink-light); }
+.compare-row .new .compare-label { color: var(--primary); }
+@media (max-width: 640px) {
+  .compare-row { grid-template-columns: 1fr; }
+}
+
+/* Stagger animation for children */
+.stagger > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.stagger.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.1s; }
+.stagger.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.2s; }
+.stagger.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.3s; }
+.stagger.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.4s; }
+.stagger.visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.5s; }
+
+/* Scroll hint */
+.scroll-hint {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: var(--ink-light);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.scroll-hint.hidden { opacity: 0; }
+.scroll-hint::after {
+  content: '↓';
+  font-size: 16px;
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+</style>
+</head>
+<body>
+
+<!-- Screen 1: 封面 -->
+<section class="dark" id="s1">
+  <div class="content wide">
+    <div class="icon-dog">🐕</div>
+    <h1>劳务狗狗</h1>
+    <p class="tagline">
+      把繁琐的劳务支付流程，<br>
+      整理成一条清晰、可执行的路径。
+    </p>
+    <p class="tagline" style="font-size:15px; margin-top:16px;">
+      本地运行 · 一次录入 · 多端复用
+    </p>
+  </div>
+</section>
+
+<!-- Screen 2: 提出问题 -->
+<section id="s2">
+  <div class="content">
+    <h2>做一笔劳务支付，<br>为什么总感觉流程很长？</h2>
+    <p>因为它不是一个动作，而是一串动作。<br>从最开始收集人员信息开始，一笔劳务通常要经过：</p>
+    <ul class="steps">
+      <li>钉钉劳务人员录入</li>
+      <li>钉钉任务下达</li>
+      <li>通知劳务管理员发起确认</li>
+      <li>税务确认</li>
+      <li>用友表头核对</li>
+      <li>用友多张表格导出</li>
+      <li>部分场景下的签署文件或国外信函处理</li>
+    </ul>
+    <p>单独看，每一步都不算难。<br>但连起来之后，就会形成大量重复整理、复制粘贴、模板拼接和导出核对的工作。</p>
+    <p class="closing">
+      不是某一步特别复杂，<br>而是整条链条都在消耗注意力。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 3: 真实痛点 -->
+<section class="dark" id="s3">
+  <div class="content">
+    <h2>真正消耗时间的，<br>往往不是判断，而是重复。</h2>
+    <p>在实际工作里，同一批劳务信息会不断重复出现。同一个姓名、证件号、银行账号、项目名称、核算月份，会被不同系统和不同模板反复使用。</p>
+    <p>与此同时，这些信息本身并不总是整齐的：</p>
+    <ul class="steps">
+      <li>初始 Excel 来源不统一</li>
+      <li>表头命名不一致</li>
+      <li>一个批次可能有多个人</li>
+      <li>国内居民和国外非居民规则不同</li>
+      <li>人民币、外币、税前、税后、价税、不含税口径并存</li>
+    </ul>
+    <p class="closing">
+      流程没有被组织起来。<br>信息也没有。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 4: 产品登场 -->
+<section id="s4">
+  <div class="content wide">
+    <h2>所以，劳务狗狗要解决的，<br>不是某一个页面，而是这条流程。</h2>
+    <p>劳务狗狗是一个本地运行的劳务支付辅助工具。它的核心目标不是取代现有系统，而是把进入钉钉、税务确认、用友导出之前的准备工作先整理成一个稳定结构。</p>
+    <p>它主要做三件事：</p>
+    <ul class="steps">
+      <li>统一整理批次和人员数据</li>
+      <li>提供钉钉录入用的可复制工作台</li>
+      <li>生成税务确认和用友侧需要的结构化导出文件</li>
+    </ul>
+    <p class="closing">
+      先把信息理顺，<br>后面的流程才会顺。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 5: 核心思路 -->
+<section class="dark" id="s5">
+  <div class="content">
+    <h2>先有一个批次，<br>再有这一批人。</h2>
+    <p>劳务狗狗把这件事拆成两个核心对象：</p>
+    <div class="mock-panel" style="margin-top:20px;">
+      <h3>支付批次</h3>
+      <p style="font-size:14px; margin:0;">对应一个项目、一个核算月份、一次支付。</p>
+    </div>
+    <div class="mock-panel" style="margin-top:12px;">
+      <h3>劳务人员</h3>
+      <p style="font-size:14px; margin:0;">对应这一批次下的每一个人，包括主信息、结算信息、税务与导出信息。</p>
+    </div>
+    <p style="margin-top:20px;">这样拆开之后，很多原来混在一起的动作就有了明确边界：</p>
+    <ul class="steps">
+      <li>D1、D2 按人处理</li>
+      <li>DQ、SQ、Y、H 按批次处理</li>
+    </ul>
+    <p class="closing">
+      流程一旦分层，<br>复杂度就会下降。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 6: S页面 -->
+<section id="s6">
+  <div class="content wide">
+    <h2>第一步，不是去填系统，<br>而是先把信息收拢。</h2>
+    <p>在劳务狗狗里，真正的起点是 <strong>S 一次性录入</strong>。这个页面是整套流程的主数据页，用来统一维护：</p>
+    <div class="mock-panel">
+      <div class="mock-grid">
+        <div class="mock-field"><span>批次头信息</span></div>
+        <div class="mock-field"><span>人员主信息</span></div>
+        <div class="mock-field"><span>人员结算信息</span></div>
+        <div class="mock-field"><span>税务与导出信息</span></div>
+      </div>
+    </div>
+    <p style="margin-top:20px;">它支持两种方式进入：<strong>手工录入</strong> + <strong>Excel 导入</strong>。这样做的意义在于，后面的钉钉录入、税务确认、用友导出，都不再各自重新整理一遍数据。</p>
+    <p class="closing">
+      不是把表搬进来，<br>而是把信息收进来。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 7: Excel导入 -->
+<section class="dark" id="s7">
+  <div class="content">
+    <h2>不是所有人的 Excel，<br>都长得一样。</h2>
+    <p>这也是实际工作里最常见的问题。表头名称和字段顺序往往都不统一。</p>
+    <p>所以劳务狗狗在导入时做的不是简单"读表"，而是：</p>
+    <ul class="steps">
+      <li>识别 sheet</li>
+      <li>判断表头行</li>
+      <li>自动匹配字段</li>
+      <li>支持手工修正映射</li>
+      <li>对手机号、金额、日期等基础数据做清洗</li>
+    </ul>
+    <p class="closing">
+      表格可以不统一，<br>但结构必须统一。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 8: D1 钉钉人员录入 -->
+<section id="s8">
+  <div class="content wide">
+    <h2>到了钉钉，<br>不需要再把同一份信息重新想一遍。</h2>
+    <p>在 D1 页面里，信息按人员展开。左侧选择人员，右侧显示字段卡片。每个字段都可以直接复制，国内居民和国外非居民自动按规则分流。</p>
+    <div class="mock-panel">
+      <h3>D1 工作台</h3>
+      <div class="two-col" style="margin-top:12px;">
+        <div class="mock-list">
+          <div class="mock-list-item"><div class="mock-avatar">张</div><span>张明 · 国内居民</span></div>
+          <div class="mock-list-item"><div class="mock-avatar">李</div><span>李华 · 国外非居民</span></div>
+          <div class="mock-list-item"><div class="mock-avatar">王</div><span>王芳 · 国内居民</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="mock-field"><span>姓名</span><span>张明</span></div>
+          <div class="mock-field"><span>证件号</span><span>310***********1234</span></div>
+          <div class="mock-field"><span>开户行</span><span>工商银行上海分行</span></div>
+          <div class="mock-field"><span>账号</span><span>6222**********7890</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="closing">
+      录入动作本身没有变，<br>但准备方式变了。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 9: D2 钉钉任务下达 -->
+<section class="dark" id="s9">
+  <div class="content">
+    <h2>"这个人是谁"与"这次做了什么"，<br>本来就不是同一件事。</h2>
+    <p>D2 页面解决的是任务下达信息。它不再重复处理人员主信息，而是把下面这些内容组合起来：</p>
+    <div class="mock-panel" style="margin-top:20px;">
+      <h3>批次级信息</h3>
+      <div class="mock-grid" style="margin-top:8px;">
+        <div class="mock-field"><span>项目</span><span>XX项目</span></div>
+        <div class="mock-field"><span>项目方</span><span>XX公司</span></div>
+        <div class="mock-field"><span>核算月份</span><span>2026-04</span></div>
+        <div class="mock-field"><span>服务周期</span><span>4月全月</span></div>
+      </div>
+    </div>
+    <div class="mock-panel" style="margin-top:12px;">
+      <h3>人员级 + 结算级信息</h3>
+      <p style="font-size:14px; margin:0;">姓名、证件号、收款信息 · 工作内容、劳务标准、核算单位、数量、单价、金额</p>
+    </div>
+    <p class="closing">
+      信息没有增加，<br>只是被重新组织。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 10: 税务处理 -->
+<section id="s10">
+  <div class="content wide">
+    <h2>有些计算，<br>不应该继续靠手工来回试。</h2>
+    <p>在当前版本里，劳务狗狗已经支持国内居民人民币场景下的税务自动计算。支持三种模式：</p>
+    <div class="mock-panel">
+      <div class="mock-grid">
+        <div class="mock-field"><span>税前正推税后</span><span style="color:var(--primary);">● 启用</span></div>
+        <div class="mock-field"><span>税后反推税前</span></div>
+        <div class="mock-field"><span>手动模式</span></div>
+      </div>
+      <div style="margin-top:16px; display:grid; grid-template-columns: repeat(3,1fr); gap:8px; font-size:13px;">
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center;"><div style="font-size:11px; color:var(--ink-light);">税前</div><div style="font-weight:700;">¥8,000</div></div>
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center;"><div style="font-size:11px; color:var(--ink-light);">个税</div><div style="font-weight:700;">¥640</div></div>
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center; border:2px solid var(--primary);"><div style="font-size:11px; color:var(--ink-light);">税后</div><div style="font-weight:700; color:var(--primary);">¥7,360</div></div>
+      </div>
+    </div>
+    <p style="margin-top:16px;">对于国外非居民和外币场景，当前版本保留相应规则并允许人工调整。</p>
+    <p class="closing">
+      该自动的自动，<br>该人工的人工。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 11: DQ 通知管理员 -->
+<section class="dark" id="s11">
+  <div class="content">
+    <h2>有些推进动作，<br>不应该卡在"我该怎么说"上。</h2>
+    <p>在 DQ 页面里，系统会按当前批次自动生成发给劳务管理员的通知语。</p>
+    <div class="mock-panel" style="margin-top:24px; font-size:15px; line-height:1.8;">
+      <p style="font-style:italic; color:var(--ink);">
+      "您好，XX项目 2026年4月批次劳务现已整理完毕，共3人，币种人民币，请协助发起确认流程。项目方：XX公司。"
+      </p>
+    </div>
+    <p style="margin-top:16px; font-size:14px;">一键复制，发送即可。</p>
+    <p class="closing">
+      一句话也能被整理好，<br>流程就更容易往下走。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 12: SQ 税务确认表 -->
+<section id="s12">
+  <div class="content wide">
+    <h2>到了财务确认这一步，<br>不应该再从零整理一次。</h2>
+    <p>SQ 页面提供的是批次级的税务确认表能力。它会基于当前批次中的人员数据，生成批次摘要、表格预览，并支持一键导出 Excel。</p>
+    <div class="mock-panel">
+      <h3>批次摘要</h3>
+      <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:8px; margin:12px 0; font-size:13px;">
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center;"><div style="font-size:11px; color:var(--ink-light);">人数</div><div style="font-weight:700;">3人</div></div>
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center;"><div style="font-size:11px; color:var(--ink-light);">总额</div><div style="font-weight:700;">¥24,000</div></div>
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center;"><div style="font-size:11px; color:var(--ink-light);">个税合计</div><div style="font-weight:700;">¥1,920</div></div>
+        <div style="padding:8px; background:var(--surface); border-radius:6px; text-align:center;"><div style="font-size:11px; color:var(--ink-light);">付款金额</div><div style="font-weight:700;">¥22,080</div></div>
+      </div>
+      <table class="mock-table">
+        <thead>
+          <tr><th>姓名</th><th>税前</th><th>个税</th><th>税后</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>张明</td><td>8,000</td><td>640</td><td>7,360</td></tr>
+          <tr><td>王芳</td><td>9,000</td><td>760</td><td>8,240</td></tr>
+          <tr><td>赵琳</td><td>7,000</td><td>520</td><td>6,480</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;"><button class="mock-btn">📥 导出 Excel</button></div>
+    </div>
+    <p class="closing">
+      模板没有消失，<br>但重复整理这件事减少了。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 13: Y 用友导出 -->
+<section class="dark" id="s13">
+  <div class="content wide">
+    <h2>最靠后的环节，<br>往往最不应该再耗费注意力。</h2>
+    <p>Y 页面是用友阶段的工作台。当前包含三块内容：</p>
+    <div class="mock-grid" style="margin-top:20px; grid-template-columns: 1fr 1fr;">
+      <div class="mock-panel">
+        <h3>表头核对区</h3>
+        <div class="mock-list" style="margin-top:8px;">
+          <div class="mock-field"><span>项目编号</span></div>
+          <div class="mock-field"><span>供应商编号</span></div>
+          <div class="mock-field"><span>核算年月</span></div>
+        </div>
+      </div>
+      <div class="mock-panel">
+        <h3>报销明细导出</h3>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+          <button class="mock-btn">📥 导出</button>
+          <span style="font-size:13px; color:var(--ink-light);">预览 3 条记录</span>
+        </div>
+      </div>
+      <div class="mock-panel">
+        <h3>结算信息导出</h3>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+          <button class="mock-btn">📥 导出</button>
+          <span style="font-size:13px; color:var(--ink-light);">预览 3 条记录</span>
+        </div>
+      </div>
+      <div class="mock-panel">
+        <h3>工作量明细导出</h3>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+          <button class="mock-btn">📥 导出</button>
+          <span style="font-size:13px; color:var(--ink-light);">按模板生成</span>
+        </div>
+      </div>
+    </div>
+    <p class="closing">
+      到最后一步，<br>状态应该是"直接使用"，而不是"重新准备"。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 14: H 签署与信函 -->
+<section id="s14">
+  <div class="content wide">
+    <h2>有些流程尾部的小环节，<br>单独看不大，合起来很耗。</h2>
+    <p>H 页面当前按场景提供辅助能力：</p>
+    <div class="two-col" style="margin-top:24px;">
+      <div class="mock-panel">
+        <h3>国内居民</h3>
+        <p style="font-size:14px;">提供钉钉签署文件下发查询所需的关键信息卡片，便于复制。</p>
+        <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
+          <div class="mock-field"><span>姓名</span><span>张明</span></div>
+          <div class="mock-field"><span>证件号</span><span>310***********1234</span></div>
+          <div class="mock-field"><span>签署状态</span><span style="color:var(--primary);">待签署</span></div>
+        </div>
+      </div>
+      <div class="mock-panel">
+        <h3>国外非居民</h3>
+        <p style="font-size:14px;">按人预览信函内容，支持一人一份 Word 导出。保留局部手动调整能力，不反写主数据。</p>
+        <div style="margin-top:12px; display:flex; align-items:center; gap:12px;">
+          <button class="mock-btn">📄 导出 Word</button>
+          <span style="font-size:13px; color:var(--ink-light);">李华</span>
+        </div>
+      </div>
+    </div>
+    <p class="closing">
+      流程的最后几步，<br>终于也被接住了。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 15: 设置与维护 -->
+<section class="dark" id="s15">
+  <div class="content wide">
+    <h2>如果一个工具要长期使用，<br>它就不能只会"跑一次"。</h2>
+    <p>劳务狗狗当前已经支持一组运行期可维护能力：</p>
+    <div class="mock-panel" style="margin-top:20px;">
+      <div class="mock-grid">
+        <div class="mock-field"><span>批次管理</span></div>
+        <div class="mock-field"><span>项目名称维护</span></div>
+        <div class="mock-field"><span>项目方维护</span></div>
+        <div class="mock-field"><span>劳务标准管理</span></div>
+        <div class="mock-field"><span>文件模板维护</span></div>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:15px;">项目名称可以标准化绑定，降低用友导入失败概率。劳务标准可以关联工作内容、价格范围、核算单位。</p>
+    <p class="closing">
+      不是把规则焊死在代码里，<br>而是把一部分规则沉淀成可维护资源。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 16: 为什么是本地工具 -->
+<section id="s16">
+  <div class="content" style="text-align:center; max-width:600px;">
+    <h2>有些工具，<br>越靠近使用现场，越有效。</h2>
+    <p style="font-size:17px;">劳务狗狗目前的形态：</p>
+    <div style="display:flex; flex-direction:column; gap:12px; margin:32px 0; text-align:left;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:20px;">🏠</span>
+        <span>本地运行 · 本地保存 · 离线可用</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:20px;">🔌</span>
+        <span>不依赖真实钉钉 API · 不依赖真实用友 API</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:20px;">🚫</span>
+        <span>没有登录 · 没有后端 · 没有多用户系统</span>
+      </div>
+    </div>
+    <p>先把这一段最真实、最高频、最容易出错的流程做顺，比一开始就做成一个大而全的平台更有意义。</p>
+    <p class="closing" style="text-align:center; border-top:none; margin-top:32px; padding-top:0;">
+      离现场越近，<br>工具越容易真正帮上忙。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 17: 真正的变化 -->
+<section class="dark" id="s17">
+  <div class="content wide">
+    <h2>劳务狗狗真正改变的，<br>不是某一张表，而是整个过程里的节奏。</h2>
+    <div class="compare-row">
+      <div class="old">
+        <div class="compare-label">过去</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:14px;">
+          <span>收表 → 整理 → 复制</span>
+          <span>→ 再整理 → 再复制</span>
+          <span>→ 再核对 → 再导出</span>
+        </div>
+      </div>
+      <div class="new">
+        <div class="compare-label">现在</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:14px;">
+          <span>录入 → 确认 → 输出 → 推进</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:24px;">它并没有改变制度本身，也没有取代现有系统。它做的，是把原本散落的信息和动作组织起来。</p>
+    <p class="closing">
+      少一次重复，就少一次出错。<br>少一次出错，就少一次返工。
+    </p>
+  </div>
+</section>
+
+<!-- Screen 18: 收尾 -->
+<section id="s18">
+  <div class="content" style="text-align:center; max-width:600px;">
+    <div class="icon-dog" style="margin:0 auto 32px;">🐕</div>
+    <h2 style="margin-bottom:16px;">从信息散落，<br>到流程成形。</h2>
+    <p>劳务狗狗是一款面向项目经理的本地劳务支付流程助手。它围绕一条真实工作链条展开：一次录入，多端复用，覆盖钉钉人员录入、任务下达、LM 确认通知、税务确认表、用友多表导出与外籍信函生成。</p>
+    <p style="margin-top:16px;">它没有试图替代一切。它只是先把最值得被梳顺的这一段，真正梳顺。</p>
+    <p class="closing" style="text-align:center; border-top:none; margin-top:40px; padding-top:0; font-size:18px; font-style:normal; color:var(--ink);">
+      劳务狗狗<br>把复杂流程，梳成一条更顺的路。
+    </p>
+  </div>
+</section>
+
+<!-- Scroll hint -->
+<div class="scroll-hint" id="scrollHint">向下滚动</div>
+
+<script>
+// Intersection Observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const content = entry.target.querySelector('.content');
+      if (content) {
+        content.classList.add('visible');
+        // Also trigger flow items within this section
+        const flowItems = entry.target.querySelectorAll('.flow-item');
+        flowItems.forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 200);
+        });
+        const flowArrows = entry.target.querySelectorAll('.flow-arrow');
+        flowArrows.forEach((arrow, i) => {
+          setTimeout(() => arrow.classList.add('visible'), i * 200 + 100);
+        });
+        const staggers = entry.target.querySelectorAll('.stagger');
+        staggers.forEach(s => s.classList.add('visible'));
+      }
+    }
+  });
+}, {
+  threshold: 0.25,
+  rootMargin: '0px 0px -10% 0px'
+});
+
+document.querySelectorAll('section').forEach(section => {
+  observer.observe(section);
+});
+
+// Hide scroll hint on scroll
+let hintHidden = false;
+window.addEventListener('scroll', () => {
+  if (!hintHidden && window.scrollY > 100) {
+    document.getElementById('scrollHint').classList.add('hidden');
+    hintHidden = true;
+  }
+}, { passive: true });
+</script>
+
+</body>
+</html>
